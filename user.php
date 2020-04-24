@@ -4,7 +4,7 @@ var_dump($_GET);
 error_reporting(E_ALL); // Показать все ошибки
 ini_set('display_errors', true); // Покажи на экране
 
-$lang = $_GET['lang'] ?? 'EN'; //https://www.php.net/manual/ru/migration70.new-features.php
+$lang = $_GET['lang'] ?? 'EN'; //Нашел тут https://www.php.net/manual/ru/migration70.new-features.php Понял что для версий старше 7,0
 //$lang (!empty($_GET['lang'])) ? $_GET['lang'] : 'RU';
 $transform = [
     'name' => ['EN' => 'Name','RU' => 'Имя','UA' => "Ім'я"],
@@ -37,12 +37,22 @@ if (!empty($_POST)) {
     if (empty($_POST['email']) || $_POST['email'] == 'example@gmail.com' ) {
         $error['email'] = 'введите почту';
     }
-
+}
 //    if (empty($_POST['gender'])) {
 //        $error['gender'] = 'Ваш пол';
 //    }
 
-}
+//$ages = array_column($users, 'name');
+//$key=array_search(75, $ages);
+//
+////if ($key !== false) {
+//////    echo "Старичек найден";
+//////}   else {
+//////    echo "Not found";
+//////}
+//
+//exit();
+
 
 // switch ($lang)
 // {
@@ -56,6 +66,7 @@ if (!empty($_POST)) {
 //         $translation = $transform['UA'];
 //         break;
 // }
+
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -76,7 +87,7 @@ if (!empty($_POST)) {
         <a href="?lang=RU" class="badge badge-primary">Русский</a>
         <a href="?lang=UA" class="badge badge-secondary">Украинский</a>
     </div>
-    <form method="post" action="user.php">
+    <form method="post" action="stats.php">
         <div class="form-group">
             <label for="formGroupExampleInput"><?=$transform['name'][$lang] ?>
                 <?php if(!empty($error['name'])) : ?>
@@ -85,7 +96,7 @@ if (!empty($_POST)) {
                     </small>
                 <?php endif; ?>
             </label>
-            <input type="text" class="form-control" id="formGroupNameInput" name="name" placeholder=""
+            <input class="form-control" id="formGroupNameInput" name="name" placeholder=" " type="text"
                    value="<?php echo $_POST['name'] ?? '' ?>">
 
         </div>
@@ -127,6 +138,7 @@ if (!empty($_POST)) {
         </div>
 <!--  Пока не работающий блок. Не могу разобраться, но ПОСТ определенно тут не делает то что надо-->
         <div class="form-group">
+            <?php $gender1 = empty($_POST['gender']) ? 'OtHers' : $_POST['gender']  ?>
             <label for="exampleFormControlSelect1"><?=$transform['gender'][$lang] ?>
                 <?php if(!empty($error['gender'])) : ?>
                     <small id="passwordHelpBlock" class="alert alert-danger">
@@ -135,10 +147,11 @@ if (!empty($_POST)) {
                 <?php endif; ?>
             </label>
             <select  class="form-control" id="exampleFormControlSelect1" name="gender">
+
                 <option></option>
-                <option<?=$_POST['gender'] == 'Man' ? 'selected': '' ?>>Man</option>
-                <option<?=$_POST['gender'] == 'Woman' ? 'selected': '' ?>>Woman</option>
-                <option<?=$_POST['gender'] == 'OtHers' ? 'selected': '' ?>>OtHers</option>
+                <option<?=$gender1 == 'Man' ? 'selected': '' ?>>Man</option>
+                <option<?=$gender1 == 'Woman' ? 'selected': '' ?>>Woman</option>
+                <option<?=$gender1 == 'OtHers' ? 'selected': '' ?>>OtHers</option>
                 <?php if(!empty($error['gender'])) : ?>
                     <small id="passwordHelpBlock" class="form-text text-muted">
                         <?=$error['gender'] ?>
