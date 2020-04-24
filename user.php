@@ -4,7 +4,7 @@ var_dump($_GET);
 error_reporting(E_ALL); // Показать все ошибки
 ini_set('display_errors', true); // Покажи на экране
 
-$lang = $_GET['lang'] ?? 'EN'; //https://www.php.net/manual/ru/migration70.new-features.php
+$lang = $_GET['lang'] ?? 'EN'; //нашел тут: https://www.php.net/manual/ru/migration70.new-features.php
 //$lang (!empty($_GET['lang'])) ? $_GET['lang'] : 'RU';
 $transform = [
     'name' => ['EN' => 'Name','RU' => 'Имя','UA' => "Ім'я"],
