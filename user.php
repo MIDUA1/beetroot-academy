@@ -1,7 +1,7 @@
 <?php
 var_dump($_POST);
 var_dump($_GET);
-error_reporting(E_ALL); // Показать все ошибки
+error_reporting(E_ALL); // включить   все ошибки
 ini_set('display_errors', true); // Покажи на экране
 
 $lang = $_GET['lang'] ?? 'EN'; //Нашел тут https://www.php.net/manual/ru/migration70.new-features.php Понял что для версий старше 7,0
@@ -16,8 +16,9 @@ $transform = [
     //'errorname' => ['EN' =>'1', 'RU' => '2', 'UA' =>'3'],
 
 ];
+//Проверяем форму на пустоту передаваемых строк:
 $error = [];
-if (!empty($_POST)) {
+if (!empty($_POST)) { //Проверка на пустоту
     if (empty($_POST['name'])) {
         $error['name'] =  'Введите имя';//transform['errorname'][$lang]
     }

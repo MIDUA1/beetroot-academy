@@ -1,5 +1,6 @@
 <?php
-
+define('BR', '<br />');
+$even = false;
 $users = [
 [
 'name' => 'Bob',
@@ -34,29 +35,73 @@ $users = [
 'animals' => ['dog', 'parrot', 'horse']
 ]
 ];
+
+
+
 if (!empty($_POST)){
     $users[] = $_POST;
 }
-//print_r($users);
-//Самый старый пользовател
-$ages = array_column($users, 'age');//берем возраста
-var_dump($ages);//Выводим возраста
-$maxAge = max($ages);//берем мах возраст
-$maxAgeId = array_search($maxAge, $ages);//Берем id ПОЛЬЗОВАТЕЛЯ
-echo '<br />';//
-var_dump($maxAge);//выводим мах возраст
-$oldertUser = $users[$maxAgeId];
 
-//Общее колличество пользователей смотреть в li
 
-//вся инфа о джеке в таблице
-$names = array_column($users, 'name');
-define('JACK', 'Jack');
-$searchjack = array_search(JACK, $names);
-//Случайный пользователь
-$randomuserid = rand(0,count($users) -1);
-$randomuserid = $users[$randomuserid];
+if (!empty($_GET['sort'])) {
+    switch ($_GET['sort']) {
+        case 'id':
+            if (!empty($_GET['order']) && $_GET['order'] == 'desc') {
+                krsort($users);
+                } else {
+                ksort($users);
+            }
+            $users = array_values($users);
+            break;
+    }
 
+}
+$animals = []; //Создаем пустой масив для животных
+foreach ($users as $user) {
+    $animals = array_merge($animals, $user['animals']); //Сливаем всех животных из масива users
+
+}
+
+$animalsfilter = array_unique($animals); //Убирает повторяющихся животных
+
+if (!empty($_GET['filter'])){
+
+    switch ($_GET['filter']){
+        case'man':
+            foreach ($users as $key => $user){
+                if ($user['gender'] !== 'man') {
+                    unset($users[$key]);
+                }
+            }
+            break;
+        case "woman":
+            foreach ($users as $key => $user){
+                if ($user['gender'] !== "woman") {
+                    unset($users[$key]);
+                }
+            }
+            break;
+        case 'covid':
+            foreach ($users as $key => $user){
+                if ($user['age'] < 60) {
+                    unset($users[$key]);
+                }
+        }
+            break;
+
+        case 'dog' :
+        case 'cat' :
+        case 'parrot' :
+        case 'horse' :
+            foreach ($users as $key => $user) {
+                $index =array_search($_GET['filter'], $user['animals']);
+                if (false === $index){
+                    unset($users[$key]);
+                }
+            }
+            break;
+    }
+}
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -70,44 +115,44 @@ $randomuserid = $users[$randomuserid];
 <br/>
 <h1>Статистика</h1>
 <div class="container">
-<ul>
-    <li>Самый старый пользователь: <?=$oldertUser['name']." ".$oldertUser['surname'].", age: ".$oldertUser['age'];?></li>
-    <li>Общее колличество пользователей в базе: <?=count($users);?></li>
-</ul>
+
     <a href="/user.php" class="badge badge-success">Registration users</a>
     <table class="table">
         <thead class="thead-dark">
         <tr>
-            <th scope="col">ID</th>
-            <th scope="col">Name</th>
-            <th scope="col">Surname</th>
-            <th scope="col">Age</th>
-            <th scope="col">Gender</th>
-            <th scope="col">Avatar</th>
-            <th scope="col">Animals</th>
+            <th scope="row"><a href="?sort=id&order=<?=!empty($_GET['order']) && $_GET['order'] == 'desc' ? 'asc' : 'desc'?>">ID</a></th>
+            <th scope="col"><a href="?sort=name">Name</a></th>
+            <th scope="col"><a href="?sort=surname">Surname</a></th>
+            <th scope="col"><a href="?sort=age">Age</a></th>
+            <th scope="col"><a href="?sort=avatar">Avatar</a></th>
         </tr>
         </thead>
         <tbody>
-        <tr>
-            <th scope="row"><?=$searchjack?></th>
-            <td><?=$users[$searchjack]['name']?></td>
-            <td><?=$users[$searchjack]['surname']?></td>
-            <td><?=$users[$searchjack]['age']?></td>
-            <td><?=$users[$searchjack]['gender']?></td>
-            <td><img src="<?=$users[$searchjack]['avatar']?>" class="mr-3"></td>
-            <td><?=$users[$searchjack]['animals']?></td>
+        <?php foreach ($users as $key => $user) : ?>
+        <?php $id = (!empty($_GET['sort']) && $_GET['sort'] == 'id' && $_GET['order'] == 'desc') ? count($users) - $key
+                : $key + 1; ?>
+        <?php $even=!$even;?>
+        <tr style ="background-color: <?=($even) ?  '#fff000': 'ffffff'?>">
+            <td><?=$id ?></td>
+            <td><?=$user['name'] ?></td>
+            <td><?=$user['surname'] ?></td>
+            <td><?=$user['age'] ?></td>
+            <td><img src="<?=$user['avatar'] ?>" width="100px"></td>
         </tr>
-        <tr>
-            <th scope="row"><?=$randomuserid?></th>
-            <td><?=$randomuserid['name']?></td>
-            <td><?=$randomuserid['surname']?></td>
-            <td><?=$randomuserid['age']?></td>
-            <td><?=$randomuserid['gender']?></td>
-            <td><img src="<?=$randomuserid['avatar']?>" class="mr-3"></td>
-            <td><?=$randomuserid['animals']?></td>
-        </tr>
+        <?php endforeach; ?>
         </tbody>
     </table>
+    <form method="get">
+    <select name="filter">
+        <option value="man">Only Men</option>
+        <option value="woman">Only woman</option>
+        <option value="covid">Only Covid AGE</option>
+        <?php foreach ($animalsfilter as $animal) :?>
+        <option value="<?=$animal?>"><?= $animal ?> </option>
+        <?php endforeach; ?>
+    </select>
+    <input type="submit">
+    </form>
 </div>
 </body>
 </html>
